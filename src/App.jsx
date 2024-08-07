@@ -7,11 +7,28 @@ import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
 import {sortPlacesByDistance} from "./loc.js";
 
+const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+const storedPlaces = storedIds.map(id =>
+    AVAILABLE_PLACES.find(place => place.id === id)
+);
+
 function App() {
   const modal = useRef();
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const selectedPlace = useRef();
-  const [pickedPlaces, setPickedPlaces] = useState([]);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
+
+
+/* 잘못된 예시, 바로 불러와지는 함수이기 때문에 굳이 useEffect 일 필요가 없다.
+  useEffect(() => {
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    const storedPlaces = storedIds.map(id =>
+        AVAILABLE_PLACES.find(place => place.id === id)
+    );
+
+    setPickedPlaces(storedPlaces);
+  }, []);
+*/
 
   useEffect(() => {
     // 앱에 직접적으로 영향을 주지 않기 때문에 이 코드 자체가 side effect(부수 효과)
@@ -55,6 +72,12 @@ function App() {
       prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
     );
     modal.current.close();
+
+    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    localStorage.setItem(
+        "selectedPlaces",
+        JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+    );
   }
 
   return (
