@@ -5,11 +5,21 @@ import { AVAILABLE_PLACES } from './data.js';
 import Modal from './components/Modal.jsx';
 import DeleteConfirmation from './components/DeleteConfirmation.jsx';
 import logoImg from './assets/logo.png';
+import {sortPlacesByDistance} from "./loc.js";
 
 function App() {
   const modal = useRef();
   const selectedPlace = useRef();
   const [pickedPlaces, setPickedPlaces] = useState([]);
+
+  // 앱에 직접적으로 영향을 주지 않기 때문에 이 코드 자체가 side effect(부수 효과)
+  navigator.geolocation.getCurrentPosition((position) => {
+    const sortedPlaces = sortPlacesByDistance(
+        AVAILABLE_PLACES,
+        position.coords.latitude,
+        position.coords.longitude
+    );
+  });
 
   function handleStartRemovePlace(id) {
     modal.current.open();
